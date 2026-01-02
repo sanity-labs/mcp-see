@@ -1,0 +1,41 @@
+{
+  "name": "mcp-see",
+  "version": "0.1.0",
+  "description": "MCP server for AI-powered image analysis - describe, detect objects, analyze colors",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp-see": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "vision",
+    "image-analysis",
+    "gemini",
+    "openai",
+    "claude",
+    "color-extraction"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "sharp": "^0.33.0",
+    "chroma-js": "^2.4.2",
+    "google-auth-library": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/chroma-js": "^2.4.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
