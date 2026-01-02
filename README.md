@@ -42,7 +42,6 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
       "args": ["github:sanity-io/mcp-see"],
       "env": {
         "GEMINI_API_KEY": "your-gemini-api-key",
-        "GOOGLE_CLOUD_PROJECT": "your-gcp-project-id",
         "OPENAI_API_KEY": "sk-...",
         "ANTHROPIC_API_KEY": "sk-ant-..."
       }
@@ -51,7 +50,9 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 }
 ```
 
-**Gemini configuration:** Use either `GEMINI_API_KEY` (simple - get one free from [Google AI Studio](https://ai.google.dev/)) or `GOOGLE_CLOUD_PROJECT` (Vertex AI with ADC - run `gcloud auth application-default login`). If both are set, `GEMINI_API_KEY` takes precedence.
+Get your Gemini API key from [Google AI Studio](https://ai.google.dev/) - it's free to start!
+
+**Enterprise users:** For Vertex AI, use `GOOGLE_CLOUD_PROJECT` instead of `GEMINI_API_KEY`. Requires ADC setup (`gcloud auth application-default login`).
 
 ### Other MCP Clients
 
