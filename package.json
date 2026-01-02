@@ -12,7 +12,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/simen/mcp-see.git"
+    "url": "https://github.com/sanity-io/mcp-see.git"
   },
   "scripts": {
     "build": "tsc",

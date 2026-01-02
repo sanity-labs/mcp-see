@@ -16,13 +16,13 @@ An MCP server that gives AI agents eyes - the ability to observe and understand 
 Run directly from GitHub with npx:
 
 ```bash
-npx github:simen/mcp-see
+npx github:sanity-io/mcp-see
 ```
 
 Or clone and build locally:
 
 ```bash
-git clone https://github.com/simen/mcp-see.git
+git clone https://github.com/sanity-io/mcp-see.git
 cd mcp-see
 npm install
 npm run build
@@ -39,7 +39,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
   "mcpServers": {
     "mcp-see": {
       "command": "npx",
-      "args": ["github:simen/mcp-see"],
+      "args": ["github:sanity-io/mcp-see"],
       "env": {
         "GEMINI_API_KEY": "your-gemini-api-key",
         "OPENAI_API_KEY": "sk-...",
@@ -54,7 +54,7 @@ Get your Gemini API key from [Google AI Studio](https://ai.google.dev/) - it's f
 
 ### Other MCP Clients
 
-The server runs on stdio transport. Configure your client to spawn `npx github:simen/mcp-see`.
+The server runs on stdio transport. Configure your client to spawn `npx github:sanity-io/mcp-see`.
 
 ## Tools
 
