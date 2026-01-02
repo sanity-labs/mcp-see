@@ -7,6 +7,13 @@
   "bin": {
     "mcp-see": "dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/simen/mcp-see.git"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
