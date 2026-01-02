@@ -23,7 +23,11 @@ function isUrl(input: string): boolean {
  * Fetch image from URL and return buffer
  */
 async function fetchImageBuffer(url: string): Promise<Buffer> {
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent": "mcp-see/1.0 (image analysis tool)",
+    },
+  });
   if (!response.ok) {
     throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
   }
