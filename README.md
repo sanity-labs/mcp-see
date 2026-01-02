@@ -9,6 +9,7 @@ An MCP server that gives AI agents eyes - the ability to observe and understand 
 - **Hierarchical analysis**: Detect regions, then zoom in for detail
 - **Precise color extraction**: K-Means clustering in LAB color space
 - **Color naming**: Human-readable color names via color.pizza API
+- **URL support**: Analyze images directly from the web (http/https)
 
 ## Installation
 
@@ -62,7 +63,7 @@ Get an AI-generated description of an image.
 **Input:**
 ```json
 {
-  "image": "/path/to/image.png",
+  "image": "/path/to/image.png or https://example.com/image.jpg",
   "prompt": "What is shown in this image?",
   "provider": "gemini",
   "detail": "detailed"

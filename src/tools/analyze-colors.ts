@@ -17,7 +17,7 @@ export const analyzeColorsTool: Tool = {
     properties: {
       image: {
         type: "string",
-        description: "Path to the image file",
+        description: "Path to the image file or URL (http/https)",
       },
       bbox: {
         type: "array",
