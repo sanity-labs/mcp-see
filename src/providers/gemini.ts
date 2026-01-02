@@ -8,7 +8,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GoogleAuth } from "google-auth-library";
 
 // Configuration
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT;
 const LOCATION = "us-central1";
 const MODEL = "gemini-2.0-flash-001";
