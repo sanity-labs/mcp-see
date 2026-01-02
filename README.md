@@ -12,14 +12,19 @@ An MCP server that gives AI agents eyes - the ability to observe and understand 
 
 ## Installation
 
+Run directly from GitHub with npx:
+
 ```bash
-npm install -g mcp-see
+npx github:simen/mcp-see
 ```
 
-Or run directly with npx:
+Or clone and build locally:
 
 ```bash
-npx mcp-see
+git clone https://github.com/simen/mcp-see.git
+cd mcp-see
+npm install
+npm run build
 ```
 
 ## MCP Client Configuration
@@ -33,7 +38,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
   "mcpServers": {
     "mcp-see": {
       "command": "npx",
-      "args": ["mcp-see"],
+      "args": ["github:simen/mcp-see"],
       "env": {
         "GOOGLE_CLOUD_PROJECT": "your-project-id",
         "OPENAI_API_KEY": "sk-...",
@@ -46,7 +51,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 
 ### Other MCP Clients
 
-The server runs on stdio transport. Configure your client to spawn `npx mcp-see` or `mcp-see` (if installed globally).
+The server runs on stdio transport. Configure your client to spawn `npx github:simen/mcp-see`.
 
 ## Tools
 
@@ -173,30 +178,6 @@ The `confidence` field indicates color precision:
 - `medium`: Mixed content
 - `low`: Photographs/gradients - colors are approximate
 
-### `get_pixel`
-
-Get exact color at specific pixel coordinates.
-
-**Input:**
-```json
-{
-  "image": "/path/to/image.png",
-  "x": 100,
-  "y": 100
-}
-```
-
-**Example Output:**
-```json
-{
-  "hex": "#e2e5ea",
-  "rgb": { "r": 226, "g": 229, "b": 234 },
-  "hsl": { "h": 217, "s": 16, "l": 90 },
-  "name": "Silver City",
-  "coordinates": { "x": 100, "y": 100 }
-}
-```
-
 ## Workflows
 
 ### Hierarchical Image Understanding
@@ -232,7 +213,6 @@ Extract implementation-ready specs from design mockups:
 3. For each button:
    - describe_region() → Button label, icon, state
    - analyze_colors() → Exact color tokens for CSS
-   - get_pixel() → Precise border/shadow colors
 ```
 
 ## Environment Variables

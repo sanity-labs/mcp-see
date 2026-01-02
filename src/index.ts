@@ -7,7 +7,6 @@
  * - detect: Detect objects with bounding boxes (Gemini)
  * - describe_region: Analyze a specific region of an image
  * - analyze_colors: Extract dominant colors from a region (K-Means LAB)
- * - get_pixel: Get exact color at pixel coordinates
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -21,7 +20,6 @@ import { describeTool, handleDescribe } from "./tools/describe.js";
 import { detectTool, handleDetect } from "./tools/detect.js";
 import { describeRegionTool, handleDescribeRegion } from "./tools/describe-region.js";
 import { analyzeColorsTool, handleAnalyzeColors } from "./tools/analyze-colors.js";
-import { getPixelTool, handleGetPixel } from "./tools/get-pixel.js";
 
 const server = new Server(
   {
@@ -43,7 +41,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       detectTool,
       describeRegionTool,
       analyzeColorsTool,
-      getPixelTool,
     ],
   };
 });
@@ -62,8 +59,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await handleDescribeRegion(args);
       case "analyze_colors":
         return await handleAnalyzeColors(args);
-      case "get_pixel":
-        return await handleGetPixel(args);
       default:
         return {
           content: [{ type: "text", text: `Unknown tool: ${name}` }],
