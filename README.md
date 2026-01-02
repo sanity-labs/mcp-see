@@ -41,7 +41,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
       "command": "npx",
       "args": ["github:simen/mcp-see"],
       "env": {
-        "GOOGLE_CLOUD_PROJECT": "your-project-id",
+        "GEMINI_API_KEY": "your-gemini-api-key",
         "OPENAI_API_KEY": "sk-...",
         "ANTHROPIC_API_KEY": "sk-ant-..."
       }
@@ -49,6 +49,8 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
   }
 }
 ```
+
+Get your Gemini API key from [Google AI Studio](https://ai.google.dev/) - it's free to start!
 
 ### Other MCP Clients
 
@@ -218,13 +220,21 @@ Extract implementation-ready specs from design mockups:
 
 ## Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `GOOGLE_CLOUD_PROJECT` | GCP project ID for Vertex AI | For Gemini |
-| `OPENAI_API_KEY` | OpenAI API key | For OpenAI provider |
-| `ANTHROPIC_API_KEY` | Anthropic API key | For Claude provider |
+### Gemini (choose one)
 
-Gemini uses Google Cloud Application Default Credentials (ADC). Run `gcloud auth application-default login` to authenticate.
+| Variable | Description |
+|----------|-------------|
+| `GEMINI_API_KEY` | **Recommended** - API key from [Google AI Studio](https://ai.google.dev/). Simple setup, free tier available. |
+| `GOOGLE_CLOUD_PROJECT` | Alternative - GCP project ID for Vertex AI. Requires ADC setup (`gcloud auth application-default login`). |
+
+If both are set, `GEMINI_API_KEY` takes precedence.
+
+### Other providers
+
+| Variable | Description |
+|----------|-------------|
+| `OPENAI_API_KEY` | OpenAI API key for GPT-4o vision |
+| `ANTHROPIC_API_KEY` | Anthropic API key for Claude vision |
 
 ## Technical Details
 

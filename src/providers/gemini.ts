@@ -1,14 +1,35 @@
 /**
- * Gemini/Vertex AI provider
- * Uses REST API with gcloud ADC authentication
+ * Gemini provider - supports both:
+ * 1. Gemini Developer API (simple API key) - GEMINI_API_KEY
+ * 2. Vertex AI (GCP project + ADC) - GOOGLE_CLOUD_PROJECT
  */
 
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GoogleAuth } from "google-auth-library";
 
-const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT || "vertex-ai-389809";
+// Configuration
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT;
 const LOCATION = "us-central1";
 const MODEL = "gemini-2.0-flash-001";
 
+// Determine which backend to use
+const useGeminiApi = !!GEMINI_API_KEY;
+
+// Gemini Developer API client (lazy init)
+let genAI: GoogleGenerativeAI | null = null;
+
+function getGenAI(): GoogleGenerativeAI {
+  if (!genAI) {
+    if (!GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY not set");
+    }
+    genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  }
+  return genAI;
+}
+
+// Vertex AI auth client (lazy init)
 let authClient: GoogleAuth | null = null;
 
 async function getAuthClient(): Promise<GoogleAuth> {
@@ -29,13 +50,45 @@ export interface GeminiResponse {
 }
 
 /**
- * Send request to Gemini via Vertex AI
+ * Send request via Gemini Developer API
  */
-export async function geminiRequest(
+async function geminiApiRequest(
   imageBase64: string,
   mimeType: string,
   prompt: string
 ): Promise<GeminiResponse> {
+  const genAI = getGenAI();
+  const model = genAI.getGenerativeModel({ model: MODEL });
+
+  const result = await model.generateContent([
+    {
+      inlineData: {
+        mimeType,
+        data: imageBase64,
+      },
+    },
+    { text: prompt },
+  ]);
+
+  const response = await result.response;
+  const text = response.text() || "No response from Gemini";
+
+  const boundingBoxes = parseBoundingBoxes(text);
+  return { text, boundingBoxes };
+}
+
+/**
+ * Send request via Vertex AI
+ */
+async function vertexAiRequest(
+  imageBase64: string,
+  mimeType: string,
+  prompt: string
+): Promise<GeminiResponse> {
+  if (!PROJECT_ID) {
+    throw new Error("GOOGLE_CLOUD_PROJECT not set");
+  }
+
   const auth = await getAuthClient();
   const client = await auth.getClient();
   const accessToken = await client.getAccessToken();
@@ -76,17 +129,34 @@ export async function geminiRequest(
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`Gemini API error: ${response.status} ${error}`);
+    throw new Error(`Vertex AI error: ${response.status} ${error}`);
   }
 
   const data = await response.json();
   const text =
     data.candidates?.[0]?.content?.parts?.[0]?.text || "No response from Gemini";
 
-  // Parse bounding boxes if present in the response
   const boundingBoxes = parseBoundingBoxes(text);
-
   return { text, boundingBoxes };
+}
+
+/**
+ * Send request to Gemini (auto-selects backend)
+ */
+export async function geminiRequest(
+  imageBase64: string,
+  mimeType: string,
+  prompt: string
+): Promise<GeminiResponse> {
+  if (useGeminiApi) {
+    return geminiApiRequest(imageBase64, mimeType, prompt);
+  } else if (PROJECT_ID) {
+    return vertexAiRequest(imageBase64, mimeType, prompt);
+  } else {
+    throw new Error(
+      "Gemini not configured. Set GEMINI_API_KEY for the simple path, or GOOGLE_CLOUD_PROJECT for Vertex AI."
+    );
+  }
 }
 
 /**
