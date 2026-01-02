@@ -91,23 +91,40 @@ export async function geminiRequest(
 
 /**
  * Parse bounding boxes from Gemini response
- * Format: [ymin, xmin, ymax, xmax] normalized 0-1000
+ * Handles multiple formats:
+ * 1. JSON array with box_2d: [{"box_2d": [y,x,y,x], "label": "..."}]
+ * 2. Text format: "label [y, x, y, x]"
  */
 function parseBoundingBoxes(
   text: string
 ): Array<{ label: string; bbox: [number, number, number, number] }> | undefined {
   const boxes: Array<{ label: string; bbox: [number, number, number, number] }> = [];
 
-  // Pattern: label followed by coordinates in brackets
-  // e.g., "TV [123, 456, 789, 012]" or "[123, 456, 789, 012] TV"
-  const patterns = [
-    // Label before bbox: "TV [123, 456, 789, 012]"
-    /([a-zA-Z][a-zA-Z0-9\s_-]*?)\s*\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]/g,
-    // Bbox before label: "[123, 456, 789, 012] TV"
-    /\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]\s*([a-zA-Z][a-zA-Z0-9\s_-]*)/g,
-  ];
+  // Try to parse JSON format first (Gemini often returns this)
+  // Look for JSON array in the response
+  const jsonMatch = text.match(/\[[\s\S]*\{[\s\S]*"box_2d"[\s\S]*\}[\s\S]*\]/);
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[0]);
+      if (Array.isArray(parsed)) {
+        for (const item of parsed) {
+          if (item.box_2d && Array.isArray(item.box_2d) && item.label) {
+            boxes.push({
+              label: item.label,
+              bbox: item.box_2d as [number, number, number, number],
+            });
+          }
+        }
+      }
+      if (boxes.length > 0) {
+        return boxes;
+      }
+    } catch {
+      // JSON parse failed, try text patterns
+    }
+  }
 
-  // Try first pattern (label before bbox)
+  // Try text pattern: label [y, x, y, x]
   let match;
   const pattern1 = /([a-zA-Z][a-zA-Z0-9\s_-]*?)\s*\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]/g;
   while ((match = pattern1.exec(text)) !== null) {
@@ -122,7 +139,7 @@ function parseBoundingBoxes(
     });
   }
 
-  // Try second pattern (bbox before label) if no matches yet
+  // Try reverse pattern: [y, x, y, x] label
   if (boxes.length === 0) {
     const pattern2 = /\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]\s*([a-zA-Z][a-zA-Z0-9\s_-]*)/g;
     while ((match = pattern2.exec(text)) !== null) {
