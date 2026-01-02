@@ -9,7 +9,7 @@ import { GoogleAuth } from "google-auth-library";
 
 // Configuration
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT || process.env.GOOGLE_PROJECT_ID;
+const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT || process.env.GOOGLE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT_ID;
 const LOCATION = "us-central1";
 const MODEL = "gemini-2.0-flash-001";
 
