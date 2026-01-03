@@ -52,7 +52,25 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 
 Get your Gemini API key from [Google AI Studio](https://ai.google.dev/) - it's free to start!
 
-**Enterprise users:** For Vertex AI, use `GOOGLE_CLOUD_PROJECT` instead of `GEMINI_API_KEY`. Requires ADC setup (`gcloud auth application-default login`).
+**Enterprise/Vertex AI users:**
+
+```json
+{
+  "mcpServers": {
+    "mcp-see": {
+      "command": "npx",
+      "args": ["github:sanity-io/mcp-see"],
+      "env": {
+        "GOOGLE_CLOUD_PROJECT": "your-gcp-project-id",
+        "OPENAI_API_KEY": "sk-...",
+        "ANTHROPIC_API_KEY": "sk-ant-..."
+      }
+    }
+  }
+}
+```
+
+Requires ADC setup: `gcloud auth application-default login`
 
 ### Other MCP Clients
 
