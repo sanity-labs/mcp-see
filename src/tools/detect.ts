@@ -31,44 +31,29 @@ export async function handleDetect(args: Record<string, unknown>) {
   const image = args.image as string;
   const prompt = args.prompt as string | undefined;
 
-  const { base64, mimeType } = await imageToBase64(image);
+  const { base64, mimeType, resized } = await imageToBase64(image);
   const detections = await geminiDetect(base64, mimeType, prompt);
 
-  if (detections.length === 0) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(
-            {
-              count: 0,
-              objects: [],
-              note: "No objects detected. Try a more specific prompt.",
-            },
-            null,
-            2
-          ),
-        },
-      ],
-    };
-  }
+  const baseResult = {
+    count: detections.length,
+    objects: detections.map((d, i) => ({
+      id: i + 1,
+      label: d.label,
+      bbox: d.bbox,
+    })),
+    ...(detections.length === 0 && {
+      note: "No objects detected. Try a more specific prompt.",
+    }),
+    ...(resized && {
+      resized: "Image was automatically resized from >5MB for API compatibility",
+    }),
+  };
 
   return {
     content: [
       {
         type: "text",
-        text: JSON.stringify(
-          {
-            count: detections.length,
-            objects: detections.map((d, i) => ({
-              id: i + 1,
-              label: d.label,
-              bbox: d.bbox,
-            })),
-          },
-          null,
-          2
-        ),
+        text: JSON.stringify(baseResult, null, 2),
       },
     ],
   };

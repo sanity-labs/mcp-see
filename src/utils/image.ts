@@ -12,6 +12,9 @@ export interface ImageMetadata {
   format: string;
 }
 
+// Maximum image size in bytes (5MB)
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
 /**
  * Check if input is a URL
  */
@@ -42,7 +45,16 @@ export async function getImageBuffer(imageSource: string): Promise<Buffer> {
   if (isUrl(imageSource)) {
     return fetchImageBuffer(imageSource);
   }
+
   const absolutePath = path.resolve(imageSource);
+
+  // Check if file exists with clear error message
+  try {
+    await fs.access(absolutePath);
+  } catch {
+    throw new Error(`File not found: ${absolutePath}`);
+  }
+
   return fs.readFile(absolutePath);
 }
 
@@ -68,14 +80,71 @@ export async function loadImage(imageSource: string): Promise<{
 }
 
 /**
+ * Resize image if it exceeds the maximum size
+ * Uses progressive quality reduction and dimension scaling
+ */
+async function resizeIfNeeded(image: sharp.Sharp, buffer: Buffer): Promise<Buffer> {
+  if (buffer.length <= MAX_IMAGE_SIZE) {
+    return buffer;
+  }
+
+  const metadata = await image.metadata();
+  const originalWidth = metadata.width ?? 1000;
+  const originalHeight = metadata.height ?? 1000;
+
+  // Try progressive resize until under limit
+  const scales = [0.75, 0.5, 0.35, 0.25];
+
+  for (const scale of scales) {
+    const newWidth = Math.round(originalWidth * scale);
+    const newHeight = Math.round(originalHeight * scale);
+
+    const resizedBuffer = await sharp(buffer)
+      .resize(newWidth, newHeight, { fit: "inside" })
+      .jpeg({ quality: 85 })
+      .toBuffer();
+
+    if (resizedBuffer.length <= MAX_IMAGE_SIZE) {
+      return resizedBuffer;
+    }
+  }
+
+  // Last resort: aggressive resize
+  const resizedBuffer = await sharp(buffer)
+    .resize(800, 800, { fit: "inside" })
+    .jpeg({ quality: 70 })
+    .toBuffer();
+
+  return resizedBuffer;
+}
+
+/**
  * Get base64 encoded image for API requests
+ * Auto-resizes images larger than 5MB
  */
 export async function imageToBase64(imageSource: string): Promise<{
   base64: string;
   mimeType: string;
+  resized: boolean;
 }> {
   const buffer = await getImageBuffer(imageSource);
   const image = sharp(buffer);
+
+  // Check if resize needed
+  const needsResize = buffer.length > MAX_IMAGE_SIZE;
+
+  if (needsResize) {
+    const resizedBuffer = await resizeIfNeeded(image, buffer);
+    // Determine mime type based on output format
+    const meta = await sharp(resizedBuffer).metadata();
+    const mimeType = meta.format === "jpeg" ? "image/jpeg" : "image/png";
+
+    return {
+      base64: resizedBuffer.toString("base64"),
+      mimeType,
+      resized: true,
+    };
+  }
 
   // Convert to PNG for consistency across providers
   const pngBuffer = await image.png().toBuffer();
@@ -83,6 +152,7 @@ export async function imageToBase64(imageSource: string): Promise<{
   return {
     base64: pngBuffer.toString("base64"),
     mimeType: "image/png",
+    resized: false,
   };
 }
 

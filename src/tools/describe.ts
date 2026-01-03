@@ -47,7 +47,7 @@ export async function handleDescribe(args: Record<string, unknown>) {
   const provider = (args.provider as Provider) || "gemini";
   const detail = (args.detail as "brief" | "detailed") || "detailed";
 
-  const { base64, mimeType } = await imageToBase64(image);
+  const { base64, mimeType, resized } = await imageToBase64(image);
 
   let description: string;
 
@@ -65,11 +65,16 @@ export async function handleDescribe(args: Record<string, unknown>) {
       throw new Error(`Unknown provider: ${provider}`);
   }
 
+  // Add note if image was resized
+  const outputText = resized
+    ? `[Note: Image was automatically resized from >5MB for API compatibility]\n\n${description}`
+    : description;
+
   return {
     content: [
       {
         type: "text",
-        text: description,
+        text: outputText,
       },
     ],
   };
