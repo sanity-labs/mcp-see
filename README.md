@@ -11,7 +11,7 @@ An MCP server that gives AI agents eyes - the ability to observe and understand 
 - **Color naming**: Human-readable color names via color.pizza API
 - **URL support**: Analyze images directly from the web (http/https)
 
-> **TL;DR**: A Gemini API key gives you full functionality (free tier available with rate limits). OpenAI/Claude are optional alternatives for image description only.
+> **TL;DR**: A Gemini API key gives you full functionality. OpenAI/Claude are optional alternatives for image description only.
 
 ## Installation
 
@@ -56,7 +56,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 }
 ```
 
-Get your Gemini API key from [Google AI Studio](https://ai.google.dev/). Free tier available with rate limits (15 RPM); pay-as-you-go for higher usage.
+Get your Gemini API key from [Google AI Studio](https://ai.google.dev/).
 
 **With all providers (optional):**
 
@@ -272,8 +272,6 @@ For full functionality, you only need a **Gemini API key**:
 
 This gives you access to **all tools**: `describe`, `detect`, `describe_region`, and `analyze_colors`.
 
-Google offers a free tier with rate limits (15 requests/minute) suitable for development and light usage. Production applications may need the paid tier for higher limits.
-
 ### Tool Availability by Provider
 
 | Tool | Gemini | OpenAI | Claude | No API |
@@ -290,7 +288,7 @@ Google offers a free tier with rate limits (15 requests/minute) suitable for dev
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GEMINI_API_KEY` | **Recommended** | API key from [Google AI Studio](https://ai.google.dev/). Free tier available (rate-limited). Enables all tools. |
+| `GEMINI_API_KEY` | **Recommended** | API key from [Google AI Studio](https://ai.google.dev/). Enables all tools. |
 | `GOOGLE_CLOUD_PROJECT` | Alternative | GCP project ID for Vertex AI instead of Gemini API. Requires ADC setup (`gcloud auth application-default login`). |
 | `OPENAI_API_KEY` | Optional | OpenAI API key for GPT-4o vision. Alternative provider for `describe` and `describe_region`. |
 | `ANTHROPIC_API_KEY` | Optional | Anthropic API key for Claude vision. Alternative provider for `describe` and `describe_region`. |
