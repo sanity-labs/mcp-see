@@ -1,5 +1,5 @@
 {
-  "name": "mcp-see",
+  "name": "@sanity-labs/mcp-see",
   "version": "0.1.0",
   "description": "MCP server for AI-powered image analysis - describe, detect objects, analyze colors",
   "type": "module",
@@ -12,7 +12,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/sanity-io/mcp-see.git"
+    "url": "https://github.com/sanity-labs/mcp-see.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "tsc",

@@ -13,16 +13,22 @@ An MCP server that gives AI agents eyes - the ability to observe and understand 
 
 ## Installation
 
-Run directly from GitHub with npx:
+Install from npm:
 
 ```bash
-npx github:sanity-io/mcp-see
+npx @sanity-labs/mcp-see
+```
+
+Or install globally:
+
+```bash
+npm install -g @sanity-labs/mcp-see
 ```
 
 Or clone and build locally:
 
 ```bash
-git clone https://github.com/sanity-io/mcp-see.git
+git clone https://github.com/sanity-labs/mcp-see.git
 cd mcp-see
 npm install
 npm run build
@@ -39,7 +45,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
   "mcpServers": {
     "mcp-see": {
       "command": "npx",
-      "args": ["github:sanity-io/mcp-see"],
+      "args": ["@sanity-labs/mcp-see"],
       "env": {
         "GEMINI_API_KEY": "your-gemini-api-key",
         "OPENAI_API_KEY": "sk-...",
@@ -59,7 +65,7 @@ Get your Gemini API key from [Google AI Studio](https://ai.google.dev/) - it's f
   "mcpServers": {
     "mcp-see": {
       "command": "npx",
-      "args": ["github:sanity-io/mcp-see"],
+      "args": ["@sanity-labs/mcp-see"],
       "env": {
         "GOOGLE_CLOUD_PROJECT": "your-gcp-project-id",
         "OPENAI_API_KEY": "sk-...",
@@ -74,7 +80,7 @@ Requires ADC setup: `gcloud auth application-default login`
 
 ### Other MCP Clients
 
-The server runs on stdio transport. Configure your client to spawn `npx github:sanity-io/mcp-see`.
+The server runs on stdio transport. Configure your client to spawn `npx @sanity-labs/mcp-see`.
 
 ## Tools
 
