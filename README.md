@@ -5,11 +5,13 @@ An MCP server that gives AI agents eyes - the ability to observe and understand 
 ## Features
 
 - **Multi-provider vision**: Describe images using Gemini, OpenAI, or Claude
-- **Object detection**: Find objects with bounding boxes (Gemini)
+- **Object detection**: Find objects with bounding boxes (Gemini only - native bbox support)
 - **Hierarchical analysis**: Detect regions, then zoom in for detail
-- **Precise color extraction**: K-Means clustering in LAB color space
+- **Precise color extraction**: K-Means clustering in LAB color space (runs locally, no API needed)
 - **Color naming**: Human-readable color names via color.pizza API
 - **URL support**: Analyze images directly from the web (http/https)
+
+> **TL;DR**: A Gemini API key (free) gives you full functionality. OpenAI/Claude are optional alternatives for image description only.
 
 ## Installation
 
@@ -47,6 +49,24 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
       "command": "npx",
       "args": ["@sanity-labs/mcp-see"],
       "env": {
+        "GEMINI_API_KEY": "your-gemini-api-key"
+      }
+    }
+  }
+}
+```
+
+Get your Gemini API key from [Google AI Studio](https://ai.google.dev/) - it's free to start!
+
+**With all providers (optional):**
+
+```json
+{
+  "mcpServers": {
+    "mcp-see": {
+      "command": "npx",
+      "args": ["@sanity-labs/mcp-see"],
+      "env": {
         "GEMINI_API_KEY": "your-gemini-api-key",
         "OPENAI_API_KEY": "sk-...",
         "ANTHROPIC_API_KEY": "sk-ant-..."
@@ -55,8 +75,6 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
   }
 }
 ```
-
-Get your Gemini API key from [Google AI Studio](https://ai.google.dev/) - it's free to start!
 
 **Enterprise/Vertex AI users:**
 
@@ -67,9 +85,7 @@ Get your Gemini API key from [Google AI Studio](https://ai.google.dev/) - it's f
       "command": "npx",
       "args": ["@sanity-labs/mcp-see"],
       "env": {
-        "GOOGLE_CLOUD_PROJECT": "your-gcp-project-id",
-        "OPENAI_API_KEY": "sk-...",
-        "ANTHROPIC_API_KEY": "sk-ant-..."
+        "GOOGLE_CLOUD_PROJECT": "your-gcp-project-id"
       }
     }
   }
@@ -244,23 +260,40 @@ Extract implementation-ready specs from design mockups:
    - analyze_colors() → Exact color tokens for CSS
 ```
 
-## Environment Variables
+## API Keys
 
-### Gemini (choose one)
+### Quick Start: Gemini Only
 
-| Variable | Description |
-|----------|-------------|
-| `GEMINI_API_KEY` | **Recommended** - API key from [Google AI Studio](https://ai.google.dev/). Simple setup, free tier available. |
-| `GOOGLE_CLOUD_PROJECT` | Alternative - GCP project ID for Vertex AI. Requires ADC setup (`gcloud auth application-default login`). |
-
-If both are set, `GEMINI_API_KEY` takes precedence.
-
-### Other providers
+For full functionality, you only need a **Gemini API key**:
 
 | Variable | Description |
 |----------|-------------|
-| `OPENAI_API_KEY` | OpenAI API key for GPT-4o vision |
-| `ANTHROPIC_API_KEY` | Anthropic API key for Claude vision |
+| `GEMINI_API_KEY` | Get one free from [Google AI Studio](https://ai.google.dev/) |
+
+This gives you access to **all tools**: `describe`, `detect`, `describe_region`, and `analyze_colors`.
+
+### Tool Availability by Provider
+
+| Tool | Gemini | OpenAI | Claude | No API |
+|------|--------|--------|--------|--------|
+| `describe` | ✅ | ✅ | ✅ | |
+| `describe_region` | ✅ | ✅ | ✅ | |
+| `detect` | ✅ | ❌ | ❌ | |
+| `analyze_colors` | | | | ✅ |
+
+- **`detect`** (object detection with bounding boxes) requires Gemini - it's the only provider with native bounding box support
+- **`analyze_colors`** runs locally using K-Means clustering - no API key needed
+
+### All Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GEMINI_API_KEY` | **Recommended** | API key from [Google AI Studio](https://ai.google.dev/). Free tier available. Enables all tools. |
+| `GOOGLE_CLOUD_PROJECT` | Alternative | GCP project ID for Vertex AI instead of Gemini API. Requires ADC setup (`gcloud auth application-default login`). |
+| `OPENAI_API_KEY` | Optional | OpenAI API key for GPT-4o vision. Alternative provider for `describe` and `describe_region`. |
+| `ANTHROPIC_API_KEY` | Optional | Anthropic API key for Claude vision. Alternative provider for `describe` and `describe_region`. |
+
+If both `GEMINI_API_KEY` and `GOOGLE_CLOUD_PROJECT` are set, `GEMINI_API_KEY` takes precedence.
 
 ## Technical Details
 
